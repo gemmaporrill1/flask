@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <h1>Profile page</h1>
+    <h2>Hobbies</h2>
+    <ul>
+        {% for hobby in hobbies %}
+        <li>{{hobby}}</li>
+        {% endfor %}
+    </ul>
+    {% endblock %}

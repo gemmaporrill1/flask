@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            font-family: sans-serif;
+        }
+        img{
+            border-radius: 10%;
+            height: 200px;
+            width: 150px
+        }
+        
+        .container{
+            display: grid;
+            grid-template-columns: 2fr;
+        }
+    </style>
+</head>
+<body>
+    <!-- 8 or higher is green else red -->
+    <h1>Movies Dashboard</h1>
+    <div class="container">
+    {% for movie in movies %}
+    <img src="{{movie.poster}}" />
+    <h3>{{movie.name}}</h3>
+    <h3>{{movie.rating}}</h3>
+    <p>{{movie.summary}}</p>
+    {% endfor %}
+    </div>
+</body>
+</html>
+
