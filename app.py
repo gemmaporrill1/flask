@@ -133,14 +133,23 @@ def profile_page():
     return render_template("profile.html", name=name, hobbies=hobbies)
 
 
-@app.route("/dashboard")
+@app.route("/movies")
 def dashboard_page():
     return render_template("movies.html", movies=movies)
 
 
-@app.get("/movies")
-def get_movies():
-    return jsonify(movies)
+@app.route("/movies/<id>")
+def get_movie_by_id(id):
+    filtered_movie = next((movie for movie in movies if movie["id"] == id), None)
+    if filtered_movie:
+        return render_template("movie.html", movie=filtered_movie)
+    else:
+        return "Movie not found", 404
+
+
+# @app.get("/movies")
+# def get_movies():
+#     return jsonify(movies)
 
 
 # @app.post("/movies")
@@ -164,12 +173,12 @@ def create_new_movie():
 # <variable name> | id -> keyword argument
 # # match the movie with id
 # task 1
-@app.get("/movies/<id>")
-def get_movie(id):
-    for movie in movies:
-        if movie["id"] == id:
-            return jsonify(movie)
-    return "completed"
+# @app.get("/movies/<id>")
+# def get_movie(id):
+#     for movie in movies:
+#         if movie["id"] == id:
+#             return jsonify(movie)
+#     return "completed"
 
 
 # # task 1.1

@@ -17,7 +17,7 @@
         }
 
         .movie-container{
-            width: 300px;
+            max-width: 300px;
         }
 
         .poster{
@@ -42,21 +42,23 @@
     </style>
 </head>
 <body>
-    <h1>Movies Dashboard</h1>
-    <div class="movie-list-container">
-    {% for movie in movies %}
-        <div class="movie-container">
-            <img class="poster" src="{{movie.poster}}" alt="{{movie.name}}"/>
-            <div class="movie-spec">
-                <h3>{{movie.name}}</h3>
-                <h3>⭐ {{movie.rating}}</h3>
-            </div>
-            <p>{{movie.summary}}</p>
-            <a href="/movies/{{movie.id}}">View More</a>
-        </div>
-    {% endfor %}
-</div>
+    <h1>Movie Detail</h1>
 
+    <div class="movie-container">
+        <iframe
+        width="100%"
+        height="720"
+        src="{{movie.trailer}}"
+        title={{movie.name}}
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+    <div class="movie-spec">
+            <h3>{{movie.name}}</h3>
+            <h3>⭐ {{movie.rating}}</h3>
+        </div>
+        <p>{{movie.summary}}</p>
+    </div>
 </body>
 </html>
-
