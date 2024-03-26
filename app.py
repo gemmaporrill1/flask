@@ -1,7 +1,69 @@
+import os
 from flask import Flask, jsonify, request, render_template
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import text
+from dotenv import load_dotenv
+
+load_dotenv()
+
+print(os.environ.get("AZURE_DATABASE_URL"))
 
 app = Flask(__name__)
 
+connection_string = os.environ.get("AZURE_DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
+db = SQLAlchemy(app)
+
+# try:
+#     with app.app_context():
+#         # Use text() to explicitly declare your SQL command
+#         result = db.session.execute(text("SELECT 1")).fetchall()
+#         print("Connection successful:", result)
+# except Exception as e:
+#     print("Error connecting to the database:", e)
+
+# Model (SQLALchemy) = Schema
+
+
+class Movie(db.Model):
+    __tablename__ = "movies"
+    id = db.Column(db.String(50), primary_key=True)
+    name = db.Column(db.String(100))
+    poster = db.Column(db.String(255))
+    rating = db.Column(db.Float)
+    summary = db.Column(db.String(500))
+    trailer = db.Column(db.String(255))
+
+    # JSON = keys
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "poster": self.poster,
+            "rating": self.rating,
+            "summary": self.summary,
+            "trailer": self.trailer,
+        }
+
+
+# Task 2
+@app.get("/movies")
+def get_movies():
+    movies = Movie.query.all()
+    return render_template("movies.html", movies=movies)
+
+
+# Task 3
+@app.route("/movies/<id>")
+def get_movie_by_id(id):
+    filtered_movie = Movie.query.get(id)
+    if filtered_movie:
+        return render_template("movie.html", movie=filtered_movie)
+    else:
+        return "Movie not found", 404
+
+
+# local
 movies = [
     {
         "id": "99",
@@ -138,13 +200,13 @@ def dashboard_page():
     return render_template("movies.html", movies=movies)
 
 
-@app.route("/movies/<id>")
-def get_movie_by_id(id):
-    filtered_movie = next((movie for movie in movies if movie["id"] == id), None)
-    if filtered_movie:
-        return render_template("movie.html", movie=filtered_movie)
-    else:
-        return "Movie not found", 404
+# @app.route("/movies/<id>")
+# def get_movie_by_id(id):
+#     filtered_movie = next((movie for movie in movies if movie["id"] == id), None)
+#     if filtered_movie:
+#         return render_template("movie.html", movie=filtered_movie)
+#     else:
+#         return "Movie not found", 404
 
 
 @app.route("/login", methods=["GET"])
@@ -166,6 +228,7 @@ def add_movie_page():
 
 @app.route("/movies", methods=["POST"])
 def add_new_movie():
+
     name = request.form.get("name")
     poster = request.form.get("poster")
     rating = request.form.get("rating")
@@ -178,7 +241,13 @@ def add_new_movie():
         "summary": summary,
         "trailer": trailer,
     }
+
+    max_id = max([int(movie["id"]) for movie in movies])
+    new_id = str(max_id + 1)
+    form_data["id"] = new_id
+
     movies.append(form_data)
+
     return render_template("movies.html", movies=movies)
 
 
