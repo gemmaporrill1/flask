@@ -147,6 +147,41 @@ def get_movie_by_id(id):
         return "Movie not found", 404
 
 
+@app.route("/login", methods=["GET"])
+def login_page():
+    return render_template("forms.html")
+
+
+@app.route("/dashboard", methods=["POST"])
+def dashboard_login_page():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    return f"Hi, {username}"
+
+
+@app.route("/add_movie", methods=["GET"])
+def add_movie_page():
+    return render_template("movie_form.html")
+
+
+@app.route("/movies", methods=["POST"])
+def add_new_movie():
+    name = request.form.get("name")
+    poster = request.form.get("poster")
+    rating = request.form.get("rating")
+    summary = request.form.get("summary")
+    trailer = request.form.get("trailer")
+    form_data = {
+        "name": name,
+        "poster": poster,
+        "rating": rating,
+        "summary": summary,
+        "trailer": trailer,
+    }
+    movies.append(form_data)
+    return render_template("movies.html", movies=movies)
+
+
 # @app.get("/movies")
 # def get_movies():
 #     return jsonify(movies)

@@ -38,11 +38,19 @@
             color: rgb(53, 53, 53)
         }
 
+        .movie-actions{
+            display: flex;
+            justify-content: space-between;
+        }
+
         
     </style>
 </head>
 <body>
     <h1>Movies Dashboard</h1>
+
+    <a href="/add_movie"><button>Add New Movie</button></a>
+
     <div class="movie-list-container">
     {% for movie in movies %}
         <div class="movie-container">
@@ -52,7 +60,10 @@
                 <h3>⭐ {{movie.rating}}</h3>
             </div>
             <p>{{movie.summary}}</p>
+            <div class="movie-actions">
             <a href="/movies/{{movie.id}}">View More</a>
+            <a href="/movies/{{movie.id}}">❌ Delete</a>
+            </div>
         </div>
     {% endfor %}
 </div>

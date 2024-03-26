@@ -31,3 +31,9 @@ flask run --debug -> for dev mode
 
 http://localhost:5000/
 
+## snapshot of packages
+pip freeze > requirements.txt
+
+
+## install all dependencies 
+pip install -r requirements.txt

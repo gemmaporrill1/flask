@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h4>Add New Movie</h4>
+    <form class="movie-form"
+    action="{{url_for('add_new_movie')}}"
+    method="POST">
+        <input name="name" type="text" placeholder="Movie Name">
+        <input name="poster" type="url" placeholder="Movie Poster URL">
+        <input name="rating" type="number" placeholder="Movie Rating">
+        <input name="summary" type="text" placeholder="Movie Summary">
+        <input name="trailer" type="url" placeholder="Movie Trailer URL">
+        <input type="submit" value="Submit new movie" />
+    </form>
+</body>
+</html>
