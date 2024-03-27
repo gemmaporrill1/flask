@@ -63,7 +63,7 @@
             <div class="movie-actions">
             <a href="/movies/{{movie.id}}">View More</a>
             <form
-            action="{{url_for('delete_movie_by_id')}}"
+            action="{{url_for('movies_list.delete_movie_by_id')}}"
             method="POST">
             <input name="movie_id" type="text" value="{{movie.id}}" hidden />
             <button type="submit">Delete</button>

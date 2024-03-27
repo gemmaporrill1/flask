@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 print(os.environ.get("AZURE_DATABASE_URL"))
@@ -47,38 +48,31 @@ class Movie(db.Model):
         }
 
 
-# Task 2
-@app.get("/movies")
-def get_movies():
-    movies = Movie.query.all()
-    return render_template("movies.html", movies=movies)
+from movies_bp import movies_bp
+from movies_list_bp import movies_list_bp
+
+app.register_blueprint(movies_bp, url_prefix="/movies")
+app.register_blueprint(movies_list_bp, url_prefix="/movie-list")
 
 
-# Task 3
-@app.route("/movies/<id>")
-def get_movie_by_id(id):
-    filtered_movie = Movie.query.get(id)
-    if filtered_movie:
-        return render_template("movie.html", movie=filtered_movie)
-    else:
-        return "Movie not found", 404
+# Task - User Model | id, username, password
+# Sign Up page
+# Login page
 
 
-# Task 4
-@app.delete("/movies/<id>")
-def delete_movie(id):
-    filtered_movie = Movie.query.get(id)
-    if not filtered_movie:
-        return jsonify({"message": "Movie not found"}), 404
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.String(50), primary_key=True, default=lambda: str(uuid.uuid4()))
+    username = db.Column(db.String(100))
+    password = db.Column(db.String(100))
 
-    try:
-        data = filtered_movie.to_dict()
-        db.session.delete(filtered_movie)
-        db.session.commit()  # making the change (update/delete/create) permanent
-        return jsonify({"message": "Deleted Successfully", "data": data})
-    except Exception as e:
-        db.session.rollback()  # undo the change
-        return jsonify({"message": str(e)}), 500
+    def to_dict(self):
+        return {"id": self.id, "username": self.id, "password": self.password}
+
+
+from users_bp import users_bp
+
+app.register_blueprint(users_bp)
 
 
 # Task 5
@@ -99,24 +93,6 @@ def delete_movie(id):
 
 
 # POST
-@app.post("/movies")
-def create_new_movie():
-    movie_data = request.json
-    new_movie = Movie(
-        name=movie_data["name"],
-        poster=movie_data["poster"],
-        rating=movie_data["rating"],
-        summary=movie_data["summary"],
-        trailer=movie_data["trailer"],
-    )
-    try:
-        db.session.add(new_movie)
-        db.session.commit()
-        result = {"message": "Added successfully", "data": new_movie.to_dict()}
-        return jsonify(result), 201
-    except Exception as e:
-        db.session.rollback()  # undo the change
-        return jsonify({"message": str(e)}), 500
 
 
 # shorter syntax -> if same variable/column name
@@ -178,42 +154,9 @@ def create_new_movie():
 
 
 # better syntax
-@app.put("/movies/<id>")
-def update_movie_by_id(id):
-    filtered_movie = Movie.query.get(id)
-    if not filtered_movie:
-        return jsonify({"message": "Movie not found"}), 404
-
-    movie_data = request.json
-    try:
-        for key, value in movie_data.items():
-            if hasattr(filtered_movie, key):
-                setattr(filtered_movie, key, value)
-
-        db.session.commit()
-        return jsonify(
-            {"message": "Updated Successfully", "data": filtered_movie.to_dict()}
-        )
-    except Exception as e:
-        return jsonify({"message": str(e)}), 500
 
 
 # Task 7 convert to db call using form
-@app.route("/movie-list", methods=["POST"])
-def add_new_movie_form():
-    name = request.form.get("name")
-    poster = request.form.get("poster")
-    rating = request.form.get("rating")
-    summary = request.form.get("summary")
-    trailer = request.form.get("trailer")
-
-    new_movie = Movie(
-        name=name, poster=poster, rating=rating, summary=summary, trailer=trailer
-    )
-
-    db.session.add(new_movie)
-    db.session.commit()
-    return "<h1>Movie added successfully</h1>"
 
 
 @app.route("/add_movie", methods=["GET", "POST"])
@@ -340,41 +283,24 @@ def add_movie_page():
 
 # jinja2 - templates
 
-users = [
-    {
-        "name": "Gemma",
-        "pic": "https://th.bing.com/th/id/R.72380963a35b3fba67398022db5ae99d?rik=ga0xsfijaETFdQ&riu=http%3a%2f%2f1.bp.blogspot.com%2f-NP0zmaopjRE%2fUhhnlfaNsrI%2fAAAAAAAAEuE%2fZ5HQX6Jhqik%2fs1600%2fa%2b(9).jpg&ehk=AGheMSErLhbTXsly541CsCFJA95DVaC6Hd3vxS6KKFU%3d&risl=&pid=ImgRaw&r=0",
-        "pro": True,
-    },
-    {
-        "name": "Tina",
-        "pic": "https://www.ninjaonlinedating.com/blog/wp-content/uploads/2019/08/SmileModifiedKRAK.jpg",
-        "pro": False,
-    },
-    {
-        "name": "Alex",
-        "pic": "https://writestylesonline.com/wp-content/uploads/2016/08/Follow-These-Steps-for-a-Flawless-Professional-Profile-Picture.jpg",
-        "pro": True,
-    },
-]
 
-name = "Gemma"
-hobbies = ["Reading", "Yoga", "cooking"]
+# name = "Gemma"
+# hobbies = ["Reading", "Yoga", "cooking"]
 
 
-@app.route("/")
-def hello_world():
-    return "<p>Hellos!</p>"
+# @app.route("/")
+# def hello_world():
+#     return "<p>Hellos!</p>"
 
 
-@app.route("/about")
-def about_page():
-    return render_template("about.html", users=users)
+# from about_bp import about_bp
+
+# app.register_blueprint(about_bp, url_prefix="/about")
 
 
-@app.route("/profile")
-def profile_page():
-    return render_template("profile.html", name=name, hobbies=hobbies)
+# @app.route("/profile")
+# def profile_page():
+#     return render_template("profile.html", name=name, hobbies=hobbies)
 
 
 # @app.route("/movies")
@@ -391,29 +317,29 @@ def profile_page():
 #         return "Movie not found", 404
 
 
-@app.route("/login", methods=["GET"])
-def login_page():
-    return render_template("forms.html")
+# @app.route("/login", methods=["GET"])
+# def login_page():
+#     return render_template("forms.html")
 
 
-@app.route("/dashboard", methods=["POST"])
-def dashboard_login_page():
-    username = request.form.get("username")
-    password = request.form.get("password")
-    return f"Hi, {username}"
+# @app.route("/dashboard", methods=["POST"])
+# def dashboard_login_page():
+#     username = request.form.get("username")
+#     password = request.form.get("password")
+#     return f"Hi, {username}"
 
 
-@app.route("/movies/delete", methods=["POST"])
-def delete_movie_by_id():
-    movie_id = request.form.get("movie_id")
-    movie_to_delete = Movie.query.get(movie_id)
+# @app.route("/movies/delete", methods=["POST"])
+# def delete_movie_by_id():
+#     movie_id = request.form.get("movie_id")
+#     movie_to_delete = Movie.query.get(movie_id)
 
-    if movie_to_delete:
-        db.session.delete(movie_to_delete)
-        db.session.commit()
-        return "<h1>Movie Deleted</h1>"
-    else:
-        return "<h1>error deleting movie</h1>"
+#     if movie_to_delete:
+#         db.session.delete(movie_to_delete)
+#         db.session.commit()
+#         return "<h1>Movie Deleted</h1>"
+#     else:
+#         return "<h1>error deleting movie</h1>"
 
 
 # @app.route("/movies", methods=["POST"])

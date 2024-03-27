@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+<div class="sign-up-container">
+    <h3>Sign Up</h3>
+    <form class="sign-up-form" 
+    action="{{url_for('users.sign_up_page')}}"
+    method="POST">
+    <h4>Username</h4>
+    <input name="username" type="text" />
+    <h4>Password</h4>
+    <input name="password" type="password" />
+    <button type="submit">Sign up</button>
+    </form>
+</div>
+</body>
+</html>
