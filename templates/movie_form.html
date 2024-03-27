@@ -7,15 +7,13 @@
 </head>
 <body>
     <h4>Add New Movie</h4>
-    <form class="movie-form"
-    action="{{url_for('add_new_movie_form')}}"
-    method="POST">
-        <input name="name" type="text" placeholder="Movie Name">
-        <input name="poster" type="url" placeholder="Movie Poster URL">
-        <input name="rating" type="number" placeholder="Movie Rating">
-        <input name="summary" type="text" placeholder="Movie Summary">
-        <input name="trailer" type="url" placeholder="Movie Trailer URL">
-        <button type="submit">Submit new movie</button>
+    <form action="{{ url_for('add_new_movie_form') }}" method="post" class="add-movie-form">
+        <input type="text" name="name" placeholder="Name">
+        <input type="text" name="poster" placeholder="Poster URL">
+        <input type="number" step="0.1" name="rating" placeholder="Rating">
+        <textarea name="summary" placeholder="Summary"></textarea>
+        <input type="text" name="trailer" placeholder="Trailer URL">
+        <button type="submit">Add Movie</button>
     </form>
 </body>
 </html>
