@@ -134,24 +134,24 @@ def create_new_movie():
 #         return jsonify({"message": str(e)}), 500
 
 
-@app.route("/movies", methods=["GET", "POST"])
-def add_new_movie():
-    try:
-        movie_data = request.json
-        new_movie = Movie(
-            name=movie_data["name"],
-            poster=movie_data["poster"],
-            rating=movie_data["rating"],
-            summary=movie_data["summary"],
-            trailer=movie_data["trailer"],
-        )
+# @app.route("/movies", methods=["GET", "POST"])
+# def add_new_movie():
+#     try:
+#         movie_data = request.json
+#         new_movie = Movie(
+#             name=movie_data["name"],
+#             poster=movie_data["poster"],
+#             rating=movie_data["rating"],
+#             summary=movie_data["summary"],
+#             trailer=movie_data["trailer"],
+#         )
 
-        db.session.add(new_movie)
-        db.session.commit()
-        return render_template("movies.html", movies=new_movie)
-    except Exception as e:
-        db.session.rollback()  # undo the change
-        return jsonify({"message": str(e)}), 500
+#         db.session.add(new_movie)
+#         db.session.commit()
+#         return render_template("movies.html", movies=new_movie)
+#     except Exception as e:
+#         db.session.rollback()  # undo the change
+#         return jsonify({"message": str(e)}), 500
 
 
 # Task 6 convert to DB call
@@ -199,25 +199,50 @@ def update_movie_by_id(id):
 
 
 # Task 7 convert to db call using form
-@app.route("/movies", methods=["POST"])
+@app.route("/movie-list", methods=["POST"])
 def add_new_movie_form():
-    movies = request.json
-    movie_data = Movie(
-        name=request.form.get("name"),
-        poster=request.form.get("poster"),
-        rating=request.form.get("rating"),
-        summary=request.form.get("summary"),
-        trailer=request.form.get("trailer"),
+    name = request.form.get("name")
+    poster = request.form.get("poster")
+    rating = request.form.get("rating")
+    summary = request.form.get("summary")
+    trailer = request.form.get("trailer")
+
+    new_movie = Movie(
+        name=name, poster=poster, rating=rating, summary=summary, trailer=trailer
     )
 
-    db.session.add(movie_data)
+    db.session.add(new_movie)
     db.session.commit()
-    return render_template("movies.html", movies=movies.to_dict())
+    return "<h1>Movie added successfully</h1>"
 
 
-@app.route("/add_movie", methods=["GET"])
+@app.route("/add_movie", methods=["GET", "POST"])
 def add_movie_page():
     return render_template("movie_form.html")
+
+
+@app.route("/update_movie", methods=["GET", "POST"])
+def update_movie_page():
+    return render_template("update_form.html")
+
+
+# better syntax
+@app.route("/movies/<id>", methods=["POST"])
+def update_movie_by_id_form(id):
+    filtered_movie = Movie.query.get(id)
+    if not filtered_movie:
+        return "Movie could not be found"
+
+    movie_data = request.json
+    try:
+        for key, value in movie_data.items():
+            if hasattr(filtered_movie, key):
+                setattr(filtered_movie, key, value)
+
+        db.session.commit()
+        return "Updated Successfully"
+    except Exception as e:
+        return "Movie update error"
 
 
 # local
