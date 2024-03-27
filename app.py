@@ -221,28 +221,28 @@ def add_movie_page():
     return render_template("movie_form.html")
 
 
-@app.route("/update_movie", methods=["GET", "POST"])
-def update_movie_page():
-    return render_template("update_form.html")
+# @app.route("/update_movie", methods=["GET", "POST"])
+# def update_movie_page():
+#     return render_template("update_form.html")
 
 
-# better syntax
-@app.route("/movies/<id>", methods=["POST"])
-def update_movie_by_id_form(id):
-    filtered_movie = Movie.query.get(id)
-    if not filtered_movie:
-        return "Movie could not be found"
+# # better syntax
+# @app.route("/movies/<id>", methods=["POST"])
+# def update_movie_by_id_form(id):
+#     filtered_movie = Movie.query.get(id)
+#     if not filtered_movie:
+#         return "Movie could not be found"
 
-    movie_data = request.json
-    try:
-        for key, value in movie_data.items():
-            if hasattr(filtered_movie, key):
-                setattr(filtered_movie, key, value)
+#     movie_data = request.json
+#     try:
+#         for key, value in movie_data.items():
+#             if hasattr(filtered_movie, key):
+#                 setattr(filtered_movie, key, value)
 
-        db.session.commit()
-        return "Updated Successfully"
-    except Exception as e:
-        return "Movie update error"
+#         db.session.commit()
+#         return "Updated Successfully"
+#     except Exception as e:
+#         return "Movie update error"
 
 
 # local
