@@ -1,4 +1,5 @@
 import os
+import uuid
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
@@ -27,7 +28,7 @@ db = SQLAlchemy(app)
 
 class Movie(db.Model):
     __tablename__ = "movies"
-    id = db.Column(db.String(50), primary_key=True)
+    id = db.Column(db.String(50), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(100))
     poster = db.Column(db.String(255))
     rating = db.Column(db.Float)
@@ -61,6 +62,158 @@ def get_movie_by_id(id):
         return render_template("movie.html", movie=filtered_movie)
     else:
         return "Movie not found", 404
+
+
+# Task 4
+@app.delete("/movies/<id>")
+def delete_movie(id):
+    filtered_movie = Movie.query.get(id)
+    if not filtered_movie:
+        return jsonify({"message": "Movie not found"}), 404
+
+    try:
+        data = filtered_movie.to_dict()
+        db.session.delete(filtered_movie)
+        db.session.commit()  # making the change (update/delete/create) permanent
+        return jsonify({"message": "Deleted Successfully", "data": data})
+    except Exception as e:
+        db.session.rollback()  # undo the change
+        return jsonify({"message": str(e)}), 500
+
+
+# Task 5
+# @app.delete("/movies/<id>")
+# def delete_movie_on_page(id):
+#     filtered_movie = Movie.query.get(id)
+#     if not filtered_movie:
+#         return jsonify({"message": "Movie not found"}), 404
+
+#     try:
+#         data = filtered_movie.to_dict()
+#         db.session.delete(filtered_movie)
+#         db.session.commit()  # making the change (update/delete/create) permanent
+#         return render_template("movies.html", movies=data)
+#     except Exception as e:
+#         db.session.rollback()  # undo the change
+#         return jsonify({"message": str(e)}), 500
+
+
+# POST
+@app.post("/movies")
+def create_new_movie():
+    movie_data = request.json
+    new_movie = Movie(
+        name=movie_data["name"],
+        poster=movie_data["poster"],
+        rating=movie_data["rating"],
+        summary=movie_data["summary"],
+        trailer=movie_data["trailer"],
+    )
+    try:
+        db.session.add(new_movie)
+        db.session.commit()
+        result = {"message": "Added successfully", "data": new_movie.to_dict()}
+        return jsonify(result), 201
+    except Exception as e:
+        db.session.rollback()  # undo the change
+        return jsonify({"message": str(e)}), 500
+
+
+# shorter syntax -> if same variable/column name
+# @app.post("/movies")
+# def create_new_movie():
+#     movie_data = request.json
+#     new_movie = Movie(**movie_data)
+#     try:
+#         db.session.add(new_movie)
+#         db.session.commit()
+#         result = {"message": "Added successfully", "data": new_movie.to_dict()}
+#         return jsonify(result), 201
+#     except Exception as e:
+#         db.session.rollback()  # undo the change
+#         return jsonify({"message": str(e)}), 500
+
+
+@app.route("/movies", methods=["GET", "POST"])
+def add_new_movie():
+    try:
+        movie_data = request.json
+        new_movie = Movie(
+            name=movie_data["name"],
+            poster=movie_data["poster"],
+            rating=movie_data["rating"],
+            summary=movie_data["summary"],
+            trailer=movie_data["trailer"],
+        )
+
+        db.session.add(new_movie)
+        db.session.commit()
+        return render_template("movies.html", movies=new_movie)
+    except Exception as e:
+        db.session.rollback()  # undo the change
+        return jsonify({"message": str(e)}), 500
+
+
+# Task 6 convert to DB call
+# @app.put("/movies/<id>")
+# def update_movie_by_id(id):
+#     filtered_movie = Movie.query.get(id)
+#     if not filtered_movie:
+#         return jsonify({"message": "Movie not found"}), 404
+
+#     movie_data = request.json
+#     try:
+#         filtered_movie.name = movie_data.get("name", filtered_movie.name)
+#         filtered_movie.poster = movie_data.get("poster", filtered_movie.poster)
+#         filtered_movie.rating = movie_data.get("rating", filtered_movie.rating)
+#         filtered_movie.summary = movie_data.get("summary", filtered_movie.summary)
+#         filtered_movie.trailer = movie_data.get("trailer", filtered_movie.trailer)
+
+#         db.session.commit()
+#         return jsonify(
+#             {"message": "Updated Successfully", "data": filtered_movie.to_dict()}
+#         )
+#     except Exception as e:
+#         return jsonify({"message": str(e)}), 500
+
+
+# better syntax
+@app.put("/movies/<id>")
+def update_movie_by_id(id):
+    filtered_movie = Movie.query.get(id)
+    if not filtered_movie:
+        return jsonify({"message": "Movie not found"}), 404
+
+    movie_data = request.json
+    try:
+        for key, value in movie_data.items():
+            if hasattr(filtered_movie, key):
+                setattr(filtered_movie, key, value)
+
+        db.session.commit()
+        return jsonify(
+            {"message": "Updated Successfully", "data": filtered_movie.to_dict()}
+        )
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
+
+# Task 7 convert to db call using form
+# @app.route("/movies", methods=["POST"])
+# def add_new_movie_form():
+
+#     name = request.form.get("name")
+#     poster = request.form.get("poster")
+#     rating = request.form.get("rating")
+#     summary = request.form.get("summary")
+#     trailer = request.form.get("trailer")
+#     new_movie = Movie(
+#         name=name, poster=poster, rating=rating, summary=summary, trailer=trailer
+#     )
+
+#     db.session.add(new_movie)
+#     db.session.commit()
+#     return render_template("movies.html", movies=new_movie)
 
 
 # local
@@ -226,29 +379,34 @@ def add_movie_page():
     return render_template("movie_form.html")
 
 
-@app.route("/movies", methods=["POST"])
-def add_new_movie():
+@app.route("/movies/delete", methods=["POST"])
+def delete_movie_by_id():
+    return "<h1>Movie deleted</h1>"
 
-    name = request.form.get("name")
-    poster = request.form.get("poster")
-    rating = request.form.get("rating")
-    summary = request.form.get("summary")
-    trailer = request.form.get("trailer")
-    form_data = {
-        "name": name,
-        "poster": poster,
-        "rating": rating,
-        "summary": summary,
-        "trailer": trailer,
-    }
 
-    max_id = max([int(movie["id"]) for movie in movies])
-    new_id = str(max_id + 1)
-    form_data["id"] = new_id
+# @app.route("/movies", methods=["POST"])
+# def add_new_movie():
 
-    movies.append(form_data)
+#     name = request.form.get("name")
+#     poster = request.form.get("poster")
+#     rating = request.form.get("rating")
+#     summary = request.form.get("summary")
+#     trailer = request.form.get("trailer")
+#     form_data = {
+#         "name": name,
+#         "poster": poster,
+#         "rating": rating,
+#         "summary": summary,
+#         "trailer": trailer,
+#     }
 
-    return render_template("movies.html", movies=movies)
+#     max_id = max([int(movie["id"]) for movie in movies])
+#     new_id = str(max_id + 1)
+#     form_data["id"] = new_id
+
+#     movies.append(form_data)
+
+#     return render_template("movies.html", movies=movies)
 
 
 # @app.get("/movies")
@@ -264,14 +422,14 @@ def add_new_movie():
 
 
 # 1 id higher than the max, send through
-@app.post("/movies")
-def create_new_movie():
-    movie_data = request.json
-    max_id = max([int(movie["id"]) for movie in movies])
-    new_id = str(max_id + 1)
-    movie_data["id"] = new_id
-    movies.append(movie_data)
-    return jsonify(movies)
+# @app.post("/movies")
+# def create_new_movie():
+#     movie_data = request.json
+#     max_id = max([int(movie["id"]) for movie in movies])
+#     new_id = str(max_id + 1)
+#     movie_data["id"] = new_id
+#     movies.append(movie_data)
+#     return jsonify(movies)
 
 
 # <variable name> | id -> keyword argument
@@ -359,25 +517,25 @@ def create_new_movie():
 
 
 # Ragav answer
-@app.delete("/movies/<id>")
-def delete_movie(id):
-    # Permission to modify the lexical scope variable
-    filtered_movie = next((movie for movie in movies if movie["id"] == id), None)
+# @app.delete("/movies/<id>")
+# def delete_movie(id):
+#     # Permission to modify the lexical scope variable
+#     filtered_movie = next((movie for movie in movies if movie["id"] == id), None)
 
-    if filtered_movie:
-        movies.remove(filtered_movie)
-        return jsonify({"message": "Deleted Successfully", "data": filtered_movie})
-    else:
-        return jsonify({"message": "Movie not found"}), 404
+#     if filtered_movie:
+#         movies.remove(filtered_movie)
+#         return jsonify({"message": "Deleted Successfully", "data": filtered_movie})
+#     else:
+#         return jsonify({"message": "Movie not found"}), 404
 
 
 # unpacking operator or update
-@app.put("/movies/<id>")
-def update_movie(id):
-    movie_data = request.json
-    for movie in movies:
-        if movie["id"] == id:
-            movie.update(movie_data)  # same memory | mutable
-            return jsonify({"message": "Movie updated successfully"})
+# @app.put("/movies/<id>")
+# def update_movie(id):
+#     movie_data = request.json
+#     for movie in movies:
+#         if movie["id"] == id:
+#             movie.update(movie_data)  # same memory | mutable
+#             return jsonify({"message": "Movie updated successfully"})
 
-    return jsonify({"error": "Movie not found"}), 404
+#     return jsonify({"error": "Movie not found"}), 404
