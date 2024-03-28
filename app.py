@@ -4,13 +4,14 @@ from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from dotenv import load_dotenv
-
+from flask_wtf import FlaskForm
 
 load_dotenv()
 
 print(os.environ.get("AZURE_DATABASE_URL"))
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("FORM_SECRET_KEY")
 
 connection_string = os.environ.get("AZURE_DATABASE_URL")
 app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
@@ -21,6 +22,7 @@ db = SQLAlchemy(app)
 #         # Use text() to explicitly declare your SQL command
 #         result = db.session.execute(text("SELECT 1")).fetchall()
 #         print("Connection successful:", result)
+#           db.create_all() # creates all Models/tables!!!
 # except Exception as e:
 #     print("Error connecting to the database:", e)
 
@@ -63,8 +65,8 @@ app.register_blueprint(movies_list_bp, url_prefix="/movie-list")
 class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.String(50), primary_key=True, default=lambda: str(uuid.uuid4()))
-    username = db.Column(db.String(100))
-    password = db.Column(db.String(100))
+    username = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(100), nullable=False)
 
     def to_dict(self):
         return {"id": self.id, "username": self.id, "password": self.password}
@@ -164,28 +166,22 @@ def add_movie_page():
     return render_template("movie_form.html")
 
 
+@app.route("/update_movie", methods=["GET", "POST"])
+def update_movie_page():
+    return render_template("update_form.html")
+
+
+@app.route("/sign_up", methods=["GET", "POST"])
+def sign_up_page():
+    return render_template("sign_up.html")
+
+
 # @app.route("/update_movie", methods=["GET", "POST"])
 # def update_movie_page():
 #     return render_template("update_form.html")
 
 
 # # better syntax
-# @app.route("/movies/<id>", methods=["POST"])
-# def update_movie_by_id_form(id):
-#     filtered_movie = Movie.query.get(id)
-#     if not filtered_movie:
-#         return "Movie could not be found"
-
-#     movie_data = request.json
-#     try:
-#         for key, value in movie_data.items():
-#             if hasattr(filtered_movie, key):
-#                 setattr(filtered_movie, key, value)
-
-#         db.session.commit()
-#         return "Updated Successfully"
-#     except Exception as e:
-#         return "Movie update error"
 
 
 # local

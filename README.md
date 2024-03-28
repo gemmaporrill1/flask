@@ -37,3 +37,5 @@ pip freeze > requirements.txt
 
 ## install all dependencies 
 pip install -r requirements.txt
+
+pip install Flask-WTF

@@ -69,3 +69,20 @@ def create_movie():
     except Exception as e:
         db.session.rollback()  # Undo the change
         return f"<h1>Error happened {str(e)}</h1>", 500
+
+
+@movies_list_bp.route("/update/<id>", methods=["POST"])
+def update_movie_by_id_form(id):
+    filtered_movie = Movie.query.get(id)
+    if not filtered_movie:
+        return "Movie could not be found"
+    movie_data = filtered_movie.to_dict()
+    try:
+        for key, value in movie_data.items():
+            if hasattr(filtered_movie, key):
+                setattr(filtered_movie, key, value)
+
+        db.session.commit()
+        return "<h1>Updated Successfully</h1>"
+    except Exception as e:
+        return "Movie update error"
