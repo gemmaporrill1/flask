@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from dotenv import load_dotenv
 from flask_wtf import FlaskForm
+from extensions import db
 
 load_dotenv()
 
@@ -15,7 +16,8 @@ app.config["SECRET_KEY"] = os.environ.get("FORM_SECRET_KEY")
 
 connection_string = os.environ.get("AZURE_DATABASE_URL")
 app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
-db = SQLAlchemy(app)
+
+db.init_app(app)
 
 # try:
 #     with app.app_context():
@@ -29,25 +31,19 @@ db = SQLAlchemy(app)
 # Model (SQLALchemy) = Schema
 
 
-class Movie(db.Model):
-    __tablename__ = "movies"
-    id = db.Column(db.String(50), primary_key=True, default=lambda: str(uuid.uuid4()))
-    name = db.Column(db.String(100))
-    poster = db.Column(db.String(255))
-    rating = db.Column(db.Float)
-    summary = db.Column(db.String(500))
-    trailer = db.Column(db.String(255))
+@app.route("/add_movie", methods=["GET", "POST"])
+def add_movie_page():
+    return render_template("movie_form.html")
 
-    # JSON = keys
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "poster": self.poster,
-            "rating": self.rating,
-            "summary": self.summary,
-            "trailer": self.trailer,
-        }
+
+@app.route("/update_movie", methods=["GET", "POST"])
+def update_movie_page():
+    return render_template("update_form.html")
+
+
+@app.route("/sign_up", methods=["GET", "POST"])
+def sign_up_page():
+    return render_template("sign_up.html")
 
 
 from movies_bp import movies_bp
@@ -62,20 +58,14 @@ app.register_blueprint(movies_list_bp, url_prefix="/movie-list")
 # Login page
 
 
-class User(db.Model):
-    __tablename__ = "users"
-    id = db.Column(db.String(50), primary_key=True, default=lambda: str(uuid.uuid4()))
-    username = db.Column(db.String(100), nullable=False, unique=True)
-    password = db.Column(db.String(100), nullable=False)
-
-    def to_dict(self):
-        return {"id": self.id, "username": self.id, "password": self.password}
-
-
 from users_bp import users_bp
 
 app.register_blueprint(users_bp)
 
+
+from main_bp import main_bp
+
+app.register_blueprint(main_bp)
 
 # Task 5
 # @app.delete("/movies/<id>")
@@ -159,21 +149,6 @@ app.register_blueprint(users_bp)
 
 
 # Task 7 convert to db call using form
-
-
-@app.route("/add_movie", methods=["GET", "POST"])
-def add_movie_page():
-    return render_template("movie_form.html")
-
-
-@app.route("/update_movie", methods=["GET", "POST"])
-def update_movie_page():
-    return render_template("update_form.html")
-
-
-@app.route("/sign_up", methods=["GET", "POST"])
-def sign_up_page():
-    return render_template("sign_up.html")
 
 
 # @app.route("/update_movie", methods=["GET", "POST"])

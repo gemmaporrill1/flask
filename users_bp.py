@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
-from app import db, User
+from extensions import db
+from models.user import User
 from flask_wtf import FlaskForm
 
 
