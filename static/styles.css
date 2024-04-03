@@ -1,0 +1,88 @@
+body{
+    font-family: 'Roboto', sans-serif;
+}
+
+.movie-list-container{
+    display: flex;
+    gap: 24px;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.movie-container{
+    width: 300px;
+}
+
+.poster{
+    border-radius: 10%;
+    height: 540px;
+    width: 100%;
+    object-fit: cover;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.movie-spec{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+p{
+    color: rgb(53, 53, 53)
+}
+
+.movie-actions{
+    display: flex;
+    justify-content: space-between;
+}
+
+body {
+    font-family: Roboto, sans-serif;
+    display: grid;
+    place-content: center;
+    min-height: 100vh;
+  }
+
+  .user-name {
+    font-style: italic;
+    font-weight: bold;
+  }
+
+  .user-pic {
+    border-radius: 50%;
+    height: 175px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  .user-msg {
+    font-size: 24px;
+  }
+.movie-list-container{
+    display: flex;
+    gap: 24px;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.movie-container{
+    max-width: 300px;
+}
+
+.poster{
+    border-radius: 10%;
+    height: 540px;
+    width: 100%;
+    object-fit: cover;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.movie-spec{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+p{
+    color: rgb(53, 53, 53)
+}

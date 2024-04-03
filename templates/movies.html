@@ -1,55 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        body{
-            font-family: 'Roboto', sans-serif;
-        }
+{% extends 'base.html' %}
 
-        .movie-list-container{
-            display: flex;
-            gap: 24px;
-            justify-content: space-around;
-            flex-wrap: wrap;
-        }
-
-        .movie-container{
-            width: 300px;
-        }
-
-        .poster{
-            border-radius: 10%;
-            height: 540px;
-            width: 100%;
-            object-fit: cover;
-            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-        }
-        
-        .movie-spec{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        p{
-            color: rgb(53, 53, 53)
-        }
-
-        .movie-actions{
-            display: flex;
-            justify-content: space-between;
-        }
-
-        
-    </style>
-</head>
-<body>
+{% block body %}
     <h1>Movies Dashboard</h1>
 
-    <a href="/add_movie"><button>Add New Movie</button></a>
+    <a href="/add_movie"><button class="btn btn-primary">Add New Movie</button></a>
 
     <div class="movie-list-container">
     {% for movie in movies %}
@@ -66,14 +20,12 @@
             action="{{url_for('movies_list.delete_movie_by_id')}}"
             method="POST">
             <input name="movie_id" type="text" value="{{movie.id}}" hidden />
-            <button type="submit">Delete</button>
+            <button class="btn btn-danger" type="submit">Delete</button>
             </form>
             <a href="/update_movie">Update</a>
             </div>
         </div>
     {% endfor %}
 </div>
-
-</body>
-</html>
+{% endblock %}
 

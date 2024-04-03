@@ -10,7 +10,7 @@ load_dotenv()
 
 print(os.environ.get("AZURE_DATABASE_URL"))
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 app.config["SECRET_KEY"] = os.environ.get("FORM_SECRET_KEY")
 
 connection_string = os.environ.get("AZURE_DATABASE_URL")
