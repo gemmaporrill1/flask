@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, render_template, request
+from flask_login import login_required
 from flask_sqlalchemy import SQLAlchemy
 from extensions import db
 from models.movie import Movie
@@ -9,6 +10,7 @@ movies_list_bp = Blueprint("movies_list", __name__)
 # Task 2: /movies-list -> Display the data on the page from Azure (MSSQL)
 # Movie list dashboard
 @movies_list_bp.route("/")  # HOF
+@login_required
 def movie_list_page():
     movie_list = Movie.query.all()  # Select * from movies | movie_list iterator
     data = [movie.to_dict() for movie in movie_list]  # list of dictionaries
@@ -18,6 +20,7 @@ def movie_list_page():
 # Task 3: /movies-list/99 -> Display the data on the page from Azure (MSSQL)
 # Movie list detail
 @movies_list_bp.route("/<id>")  # HOF
+@login_required
 def movie_detail_page(id):
     filtered_movie = Movie.query.get(id)
     if filtered_movie:
@@ -28,6 +31,7 @@ def movie_detail_page(id):
 
 
 @movies_list_bp.route("/add", methods=["GET"])  # HOF
+@login_required
 def add_movie():
     return render_template("movie_form.html")
 

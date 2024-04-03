@@ -1,5 +1,5 @@
-from flask import Blueprint, jsonify, render_template, request
-from flask_sqlalchemy import SQLAlchemy
+from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask_login import login_user
 from extensions import db
 from models.user import User
 from flask_wtf import FlaskForm
@@ -69,5 +69,12 @@ def login_page():
     form = LoginForm()
 
     if form.validate_on_submit():
-        return "<h1>Login Success</h1>"
+        user = User.query.filter_by(username=form.username.data).first()
+        login_user(user)
+
+        flash("Logged in successfully.")
+
+        next = request.args.get("next")
+
+        return redirect(next or url_for("movies_list.movie_list_page"))
     return render_template("login.html", form=form)

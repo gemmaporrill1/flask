@@ -1,11 +1,15 @@
 import os
 import uuid
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from dotenv import load_dotenv
 from flask_wtf import FlaskForm
 from extensions import db
+from models.user import User
+from flask_login import LoginManager
+
+login_manager = LoginManager()
 
 load_dotenv()
 
@@ -18,6 +22,9 @@ connection_string = os.environ.get("AZURE_DATABASE_URL")
 app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
 
 db.init_app(app)
+
+login_manager.init_app(app)
+
 
 # try:
 #     with app.app_context():
@@ -66,6 +73,12 @@ app.register_blueprint(users_bp)
 from routes.main_bp import main_bp
 
 app.register_blueprint(main_bp)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
 
 # Task 5
 # @app.delete("/movies/<id>")
