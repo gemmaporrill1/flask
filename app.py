@@ -46,8 +46,8 @@ def sign_up_page():
     return render_template("sign_up.html")
 
 
-from movies_bp import movies_bp
-from movies_list_bp import movies_list_bp
+from routes.movies_bp import movies_bp
+from routes.movies_list_bp import movies_list_bp
 
 app.register_blueprint(movies_bp, url_prefix="/movies")
 app.register_blueprint(movies_list_bp, url_prefix="/movie-list")
@@ -58,12 +58,12 @@ app.register_blueprint(movies_list_bp, url_prefix="/movie-list")
 # Login page
 
 
-from users_bp import users_bp
+from routes.users_bp import users_bp
 
 app.register_blueprint(users_bp)
 
 
-from main_bp import main_bp
+from routes.main_bp import main_bp
 
 app.register_blueprint(main_bp)
 
