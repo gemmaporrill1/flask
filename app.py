@@ -13,27 +13,21 @@ login_manager = LoginManager()
 
 load_dotenv()
 
-print(os.environ.get("AZURE_DATABASE_URL"))
+# print(os.environ.get("AZURE_DATABASE_URL"))
 
 app = Flask(__name__, static_folder="static")
 app.config["SECRET_KEY"] = os.environ.get("FORM_SECRET_KEY")
 
-connection_string = os.environ.get("AZURE_DATABASE_URL")
+# local database
+connection_string = os.environ.get("LOCAL_DATABASE_URL")
+
+# connection_string = os.environ.get("AZURE_DATABASE_URL")
 app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
 
 db.init_app(app)
 
 login_manager.init_app(app)
 
-
-# try:
-#     with app.app_context():
-#         # Use text() to explicitly declare your SQL command
-#         result = db.session.execute(text("SELECT 1")).fetchall()
-#         print("Connection successful:", result)
-#           db.create_all() # creates all Models/tables!!!
-# except Exception as e:
-#     print("Error connecting to the database:", e)
 
 # Model (SQLALchemy) = Schema
 
@@ -78,6 +72,18 @@ app.register_blueprint(main_bp)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
+
+
+try:
+    with app.app_context():
+        # Use text() to explicitly declare your SQL command
+        result = db.session.execute(text("SELECT 1")).fetchall()
+        print("Connection successful:", result)
+        # db.drop_all()
+        # db.create_all()  # creates all Models/tables!!!
+        print("Creation done")
+except Exception as e:
+    print("Error connecting to the database:", e)
 
 
 # Task 5
