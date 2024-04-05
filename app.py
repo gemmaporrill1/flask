@@ -19,9 +19,9 @@ app = Flask(__name__, static_folder="static")
 app.config["SECRET_KEY"] = os.environ.get("FORM_SECRET_KEY")
 
 # local database
-connection_string = os.environ.get("LOCAL_DATABASE_URL")
+# connection_string = os.environ.get("LOCAL_DATABASE_URL")
 
-# connection_string = os.environ.get("AZURE_DATABASE_URL")
+connection_string = os.environ.get("AZURE_DATABASE_URL")
 app.config["SQLALCHEMY_DATABASE_URI"] = connection_string
 
 db.init_app(app)
