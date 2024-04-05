@@ -3,7 +3,8 @@ FROM python:3.8-slim
  
 # Set the working directory in the container
 WORKDIR /usr/src/app
- 
+
+
 # Install system dependencies for PyODBC and MSSQL ODBC Driver
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gnupg g++ unixodbc-dev wget \
