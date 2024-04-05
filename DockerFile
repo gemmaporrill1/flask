@@ -30,3 +30,4 @@ ENV FLASK_RUN_HOST=0.0.0.0
  
 # Run app.py using Gunicorn
 CMD ["gunicorn", "-b", "0.0.0.0:8000", "app:app"]
+
